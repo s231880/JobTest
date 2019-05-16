@@ -61,7 +61,9 @@ public class VisualManager : MonoBehaviour {
         }
     }
 
-    //Change the effect when changing the song
+    /// <summary>
+    /// Change the effect when changing the song
+    /// </summary>
     public void ChangeEffect(Transform newEffect_, Transform newSong_)
     {
         //Disable the previous effect meshrender
@@ -74,6 +76,9 @@ public class VisualManager : MonoBehaviour {
         AssignAudioToVisual(currentEffect_, newSong_);
     }
 
+     /// <summary>
+     /// Change the texture color
+     /// </summary>
     public void changeMediaPlayerColor(Color32 newColor_)
     {
         m_DictOfVisuals[currentEffect_].ChangeMaterialColor(newColor_);

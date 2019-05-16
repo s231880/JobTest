@@ -24,7 +24,7 @@ public class Core : MonoBehaviour
     private static int currentEffect = 0;
 
     //keep track if the audioSource is running or not
-    private static bool isThePlayerPlaying = true;
+    //private static bool isThePlayerPlaying = true;
     private static bool isTheEffectBeenChanged = false;
 	
     // Use this for initialization
@@ -45,9 +45,6 @@ public class Core : MonoBehaviour
                 audioTransforms.Add(child);
                 AudioManager.Instance.AddAudioSource(child);
             }
-
-            //Setting the current song to the first child
-            AudioManager.currentSong_ = m_AudioSource.GetChild(0);
         }
 
         VisualManager.Instance.Init();
@@ -82,81 +79,92 @@ public class Core : MonoBehaviour
     /// <summary>
     ///Method called by the UI next button
     /// </summary>
-    public void NextSong()
+    public void pressedNextButton()
     {
-        if (currentSong != 2)
-        {
-            ++currentSong;
-            AudioManager.Instance.ChangeSong(m_AudioSource.GetChild(currentSong));
-            NextEffect(m_AudioSource.GetChild(currentSong));
-        }
-
-        else
-        {
-            currentSong = 0;
-            AudioManager.Instance.ChangeSong(m_AudioSource.GetChild(currentSong));
-            NextEffect(m_AudioSource.GetChild(currentSong));
-        }
+        NextSong();
+        NextEffect();
     }
 
     /// <summary>
     ///Method called by the UI previous button
     /// </summary>
+    public void pressedPreviousButton()
+    {
+        PreviousSong();
+        PreviousEffect();
+    }
+
+    /// <summary>
+    /// Method to notify the audio manager to play the next song
+    /// </summary>
+    public void NextSong()
+    {
+        int newSongToPlayIndex;
+
+        if (currentSong != 2)
+        {
+            newSongToPlayIndex = currentSong + 1;
+            AudioManager.Instance.ChangeSong(m_AudioSource.GetChild(currentSong), m_AudioSource.GetChild(newSongToPlayIndex));
+        }
+
+        else
+        {
+            newSongToPlayIndex = 0;
+            AudioManager.Instance.ChangeSong(m_AudioSource.GetChild(currentSong), m_AudioSource.GetChild(newSongToPlayIndex));
+        }
+
+        currentSong = newSongToPlayIndex;
+    }
+
+    /// <summary>
+    /// Method to notify the audio manager to play the previous song
+    /// </summary>
     public void PreviousSong()
     {
+        int newSongToPlayIndex;
 
         if (currentSong != 0)
         {
-            --currentSong;
-            AudioManager.Instance.ChangeSong(m_AudioSource.GetChild(currentSong));
-            PreviousEffect(m_AudioSource.GetChild(currentSong));
+            newSongToPlayIndex = currentSong - 1;
+            AudioManager.Instance.ChangeSong(m_AudioSource.GetChild(currentSong), m_AudioSource.GetChild(newSongToPlayIndex));
         }
 
         else
         {
-            currentSong = 2;
-            AudioManager.Instance.ChangeSong(m_AudioSource.GetChild(currentSong));
-            PreviousEffect(m_AudioSource.GetChild(currentSong));
+            newSongToPlayIndex = 2;
+            AudioManager.Instance.ChangeSong(m_AudioSource.GetChild(currentSong), m_AudioSource.GetChild(newSongToPlayIndex));
         }
+
+        currentSong = newSongToPlayIndex;
     }
 
     /// <summary>
-    ///  Method called by the UI play button, to pause and play the song
+    ///  Method called by the UI play button, notify the AudioMangare to play/pause the song
     /// </summary>
-    public void PausePlaySong()
+    public void PressedPlayButton()
     {
-        if (isThePlayerPlaying)
-        {
-            AudioManager.Instance.PauseSong();
-            isThePlayerPlaying = false;
-        }
-        else
-        {
-            AudioManager.Instance.PlaySong();
-            isThePlayerPlaying = true;
-        }
-            
+        AudioManager.Instance.PlayPauseTheSong(m_AudioSource.GetChild(currentSong));
     }
 
     /// <summary>
-    ///  Method to change the Volume through the UI slider
+    ///  Method called by the UI volume slider
     /// </summary>
-    public void ChangeVolume()
+    public void SliderVolumeChange()
     {
-        AudioManager.Instance.UpdateVolume(volumeSlider.value);
+        AudioManager.Instance.UpdateVolume(volumeSlider.value, m_AudioSource.GetChild(currentSong));
     }
 
-    public void NextEffect(Transform newSong_)
+    public void NextEffect()
     {
         if(currentEffect != 2)
         {
             currentEffect++;
-            VisualManager.Instance.ChangeEffect(m_Visuals.GetChild(currentEffect), newSong_);
+            VisualManager.Instance.ChangeEffect(m_Visuals.GetChild(currentEffect), m_AudioSource.GetChild(currentSong));
         }
         else
         {
             currentEffect = 0;
-            VisualManager.Instance.ChangeEffect(m_Visuals.GetChild(currentEffect), newSong_);
+            VisualManager.Instance.ChangeEffect(m_Visuals.GetChild(currentEffect), m_AudioSource.GetChild(currentSong));
         }
 
         UpdateSelectedToggle(currentEffect);
@@ -165,17 +173,17 @@ public class Core : MonoBehaviour
             ResetToggle(currentEffect);
     }
 
-    public void PreviousEffect(Transform newSong_)
+    public void PreviousEffect()
     {
         if (currentEffect != 0)
         {
             currentEffect--;
-            VisualManager.Instance.ChangeEffect(m_Visuals.GetChild(currentEffect), newSong_);
+            VisualManager.Instance.ChangeEffect(m_Visuals.GetChild(currentEffect), m_AudioSource.GetChild(currentSong));
         }
         else
         {
             currentEffect = 2;
-            VisualManager.Instance.ChangeEffect(m_Visuals.GetChild(currentEffect), newSong_);
+            VisualManager.Instance.ChangeEffect(m_Visuals.GetChild(currentEffect), m_AudioSource.GetChild(currentSong));
         }
 
         UpdateSelectedToggle(currentEffect);
@@ -223,6 +231,9 @@ public class Core : MonoBehaviour
         listOfToggle[index_].isOn = true;
     }
 
+    /// <summary>
+    /// Method call when the user change the RGB sliders values to update the mediaPlayer effect color
+    /// </summary>
     public void UpdateTextureColor()
     {
         textureColor.r = redSlider.value;

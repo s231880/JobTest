@@ -6,12 +6,10 @@ public class AudioManager : MonoBehaviour
 {
     public static AudioManager Instance;
 
-    //Current playing song
-    public static Transform currentSong_;
-
     //Media player volume
     public static float playerVolume = 1;
-
+    //Keep track if the mediaPlayer is currently active
+    private static bool isThePlayerPlaying = true;
 
     private Dictionary<Transform, Audio> m_AudioSources = new Dictionary<Transform, Audio>();
 
@@ -71,34 +69,50 @@ public class AudioManager : MonoBehaviour
         }
     }
 
-    public void PlaySong()
+    public void PlaySong(Transform songToPlay_)
     {
-        m_AudioSources[currentSong_].GetComponent<AudioSource>().volume = playerVolume;
-        m_AudioSources[currentSong_].GetComponent<AudioSource>().Play();
+        m_AudioSources[songToPlay_].GetComponent<AudioSource>().volume = playerVolume;
+        m_AudioSources[songToPlay_].GetComponent<AudioSource>().Play();
     }
 
-    public void PauseSong()
+    public void PauseSong(Transform songToPause_)
     {
-        m_AudioSources[currentSong_].GetComponent<AudioSource>().Pause();
+        m_AudioSources[songToPause_].GetComponent<AudioSource>().Pause();
     }
 
-    public void StopSong()
+    public void PlayPauseTheSong(Transform currentSong_)
     {
-        m_AudioSources[currentSong_].GetComponent<AudioSource>().Stop();
+        if (isThePlayerPlaying)
+        {
+            PauseSong(currentSong_);
+            isThePlayerPlaying = false;
+        }
+
+        else
+        {
+            PlaySong(currentSong_);
+            isThePlayerPlaying = true;
+        }
+    }
+
+    public void StopSong(Transform songToStop_)
+    {
+        m_AudioSources[songToStop_].GetComponent<AudioSource>().Stop();
     }
 
 
-    public void UpdateVolume(float newVolume_)
+
+
+    public void UpdateVolume(float newVolume_, Transform currentSong_)
     {
         playerVolume = newVolume_;
         m_AudioSources[currentSong_].GetComponent<AudioSource>().volume = playerVolume;
     }
 
 
-    public void ChangeSong(Transform newSong_)
+    public void ChangeSong(Transform oldSong_, Transform newSong_)
     {
-        StopSong();
-        currentSong_ = newSong_;
-        PlaySong();
+        StopSong(oldSong_);
+        PlaySong(newSong_);
     }
 }
