@@ -1,8 +1,6 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using System.Linq;
 
 public class Core : MonoBehaviour
 {
@@ -20,15 +18,19 @@ public class Core : MonoBehaviour
     List<Toggle> listOfToggle;
 
     //Variables that keep track of what track and effect aare currently running
-    private static int currentSong = 0;
-    private static int currentEffect = 0;
+    private static int currentSong_ = 0;
+    private static int currentEffect_ = 0;
 
-    //keep track if the audioSource is running or not
+
+    //private static int selectedEffectThroughUI_ = 0;
+    private static bool hasTheEffectBeenChanged = false;
+
+
     //private static bool isThePlayerPlaying = true;
-    private static bool isTheEffectBeenChanged = false;
-	
+    //private static bool isTheEffectBeenChanged = false;
+
     // Use this for initialization
-	void Start ()
+    void Start ()
     {
         Application.runInBackground = true;
         AudioManager.Instance.Init();
@@ -57,7 +59,6 @@ public class Core : MonoBehaviour
                 VisualManager.Instance.CreateVisual(child);
             }
 
-            VisualManager.currentEffect_ = m_Visuals.GetChild(0);
         }
         //Assign each visual to an audio
         for(int i = 0; i < visualTransforms.Count; i++)
@@ -76,6 +77,9 @@ public class Core : MonoBehaviour
         textureColor = new Color32(0,0,0,0);
     }
 
+    //-------------------------------------------------------------------------------------------
+    //-------------------------- UI HANDLE FUNCTIONS ----------------------------------------
+    
     /// <summary>
     ///Method called by the UI next button
     /// </summary>
@@ -95,55 +99,11 @@ public class Core : MonoBehaviour
     }
 
     /// <summary>
-    /// Method to notify the audio manager to play the next song
-    /// </summary>
-    public void NextSong()
-    {
-        int newSongToPlayIndex;
-
-        if (currentSong != 2)
-        {
-            newSongToPlayIndex = currentSong + 1;
-            AudioManager.Instance.ChangeSong(m_AudioSource.GetChild(currentSong), m_AudioSource.GetChild(newSongToPlayIndex));
-        }
-
-        else
-        {
-            newSongToPlayIndex = 0;
-            AudioManager.Instance.ChangeSong(m_AudioSource.GetChild(currentSong), m_AudioSource.GetChild(newSongToPlayIndex));
-        }
-
-        currentSong = newSongToPlayIndex;
-    }
-
-    /// <summary>
-    /// Method to notify the audio manager to play the previous song
-    /// </summary>
-    public void PreviousSong()
-    {
-        int newSongToPlayIndex;
-
-        if (currentSong != 0)
-        {
-            newSongToPlayIndex = currentSong - 1;
-            AudioManager.Instance.ChangeSong(m_AudioSource.GetChild(currentSong), m_AudioSource.GetChild(newSongToPlayIndex));
-        }
-
-        else
-        {
-            newSongToPlayIndex = 2;
-            AudioManager.Instance.ChangeSong(m_AudioSource.GetChild(currentSong), m_AudioSource.GetChild(newSongToPlayIndex));
-        }
-
-        currentSong = newSongToPlayIndex;
-    }
-
-    /// <summary>
-    ///  Method called by the UI play button, notify the AudioMangare to play/pause the song
+    ///  Method called by the UI play button
     /// </summary>
     public void PressedPlayButton()
     {
-        AudioManager.Instance.PlayPauseTheSong(m_AudioSource.GetChild(currentSong));
+        AudioManager.Instance.PlayPauseTheSong(m_AudioSource.GetChild(currentSong_));
     }
 
     /// <summary>
@@ -151,84 +111,7 @@ public class Core : MonoBehaviour
     /// </summary>
     public void SliderVolumeChange()
     {
-        AudioManager.Instance.UpdateVolume(volumeSlider.value, m_AudioSource.GetChild(currentSong));
-    }
-
-    public void NextEffect()
-    {
-        if(currentEffect != 2)
-        {
-            currentEffect++;
-            VisualManager.Instance.ChangeEffect(m_Visuals.GetChild(currentEffect), m_AudioSource.GetChild(currentSong));
-        }
-        else
-        {
-            currentEffect = 0;
-            VisualManager.Instance.ChangeEffect(m_Visuals.GetChild(currentEffect), m_AudioSource.GetChild(currentSong));
-        }
-
-        UpdateSelectedToggle(currentEffect);
-
-        if (isTheEffectBeenChanged)
-            ResetToggle(currentEffect);
-    }
-
-    public void PreviousEffect()
-    {
-        if (currentEffect != 0)
-        {
-            currentEffect--;
-            VisualManager.Instance.ChangeEffect(m_Visuals.GetChild(currentEffect), m_AudioSource.GetChild(currentSong));
-        }
-        else
-        {
-            currentEffect = 2;
-            VisualManager.Instance.ChangeEffect(m_Visuals.GetChild(currentEffect), m_AudioSource.GetChild(currentSong));
-        }
-
-        UpdateSelectedToggle(currentEffect);
-
-        if (isTheEffectBeenChanged)
-            ResetToggle(currentEffect);
-    }
-
-    /// <summary>
-    /// This method allows the user to change the visual effect through the Toggle Group
-    /// without changing the playing song
-    /// </summary>
-    public void ChangeEffectThroughUI()
-    {
-        string effectName_ = "";
-
-        foreach (Toggle toggle_ in listOfToggle)
-        {
-            if (toggle_.isOn)
-                effectName_ = toggle_.name;
-        }
-
-        //Changing effect without changing song
-        if (effectName_ == "Toggle1")
-            VisualManager.Instance.ChangeEffect(m_Visuals.GetChild(0), m_AudioSource.GetChild(currentSong));
-
-        else if (effectName_ == "Toggle2")
-            VisualManager.Instance.ChangeEffect(m_Visuals.GetChild(1), m_AudioSource.GetChild(currentSong));
-
-        else
-            VisualManager.Instance.ChangeEffect(m_Visuals.GetChild(2), m_AudioSource.GetChild(currentSong));
-
-        isTheEffectBeenChanged = true;
-
-    }
-
-    public void ResetToggle(int index_)
-    {
-        listOfToggle[index_].isOn = true;
-        isTheEffectBeenChanged = false;
-    }
-
-    public void UpdateSelectedToggle(int index_)
-    {
-        listOfToggle[index_].isOn = true;
+        AudioManager.Instance.UpdateVolume(volumeSlider.value, m_AudioSource.GetChild(currentSong_));
     }
 
     /// <summary>
@@ -240,7 +123,158 @@ public class Core : MonoBehaviour
         textureColor.g = greenSlider.value;
         textureColor.b = blueSlider.value;
 
-        VisualManager.Instance.changeMediaPlayerColor(textureColor);
+        VisualManager.Instance.changeMediaPlayerColor(m_Visuals.GetChild(currentEffect_), textureColor);
     }
 
+    /// <summary>
+    /// Function to find which one of the toggle effect is activated
+    /// </summary>
+    public int GetEnabledToggleIndex()
+    {
+        string effectName_ = "";
+
+        foreach (Toggle toggle_ in listOfToggle)
+        {
+            if (toggle_.isOn)
+                effectName_ = toggle_.name;
+        }
+
+        if (effectName_ == "Toggle1")
+            return 0;
+
+        else if (effectName_ == "Toggle2")
+            return 1;
+
+        else
+            return 2;
+    }
+
+    /// <summary>
+    /// This method allows the user to change the visual effect through the Toggle Group
+    /// without changing the playing song
+    /// </summary>
+    public void ChangeEffectThroughUI()
+    {
+        currentEffect_ = GetEnabledToggleIndex();
+        VisualManager.Instance.ChangeEffect(m_Visuals.GetChild(currentEffect_), m_Visuals.GetChild(currentEffect_), m_AudioSource.GetChild(currentSong_));
+
+        //UpdateSelectedToggle(currentEffect_, true);
+        //hasTheEffectBeenChanged = true;
+        //Debug.Log(selectedEffectThroughUI_ + "ChangeEffectThroughUI" + currentEffect_);
+    }
+
+    public void ResetToggle(int index_)
+    {
+        listOfToggle[index_].isOn = true;
+        //selectedEffectThroughUI_ = currentEffect_;
+    }
+
+    public void UpdateSelectedToggle(int index_, bool manualChange)
+    {
+        listOfToggle[index_].isOn = true;
+
+    }
+
+    //-------------------------- UI HANDLE FUNCTIONS ----------------------------------------
+    //-------------------------------------------------------------------------------------------
+
+
+
+    //-------------------------------------------------------------------------------------------
+    //---------------------FUNCTIONS TO HANDLE AUDIO AND VISUAL MANAGER--------------------------
+
+    /// <summary>
+    /// Method to notify the audio manager to play the next song
+    /// </summary>
+    public void NextSong()
+    {
+        int newSongToPlayIndex_;
+
+        if (currentSong_ != 2)
+        {
+            newSongToPlayIndex_ = currentSong_ + 1;
+            AudioManager.Instance.ChangeSong(m_AudioSource.GetChild(currentSong_), m_AudioSource.GetChild(newSongToPlayIndex_));
+        }
+
+        else
+        {
+            newSongToPlayIndex_ = 0;
+            AudioManager.Instance.ChangeSong(m_AudioSource.GetChild(currentSong_), m_AudioSource.GetChild(newSongToPlayIndex_));
+        }
+
+        currentSong_ = newSongToPlayIndex_;
+    }
+
+    /// <summary>
+    /// Method to notify the audio manager to play the previous song
+    /// </summary>
+    public void PreviousSong()
+    {
+        int newSongToPlayIndex_;
+
+        if (currentSong_ != 0)
+        {
+            newSongToPlayIndex_ = currentSong_ - 1;
+            AudioManager.Instance.ChangeSong(m_AudioSource.GetChild(currentSong_), m_AudioSource.GetChild(newSongToPlayIndex_));
+        }
+
+        else
+        {
+            newSongToPlayIndex_ = 2;
+            AudioManager.Instance.ChangeSong(m_AudioSource.GetChild(currentSong_), m_AudioSource.GetChild(newSongToPlayIndex_));
+        }
+
+        currentSong_ = newSongToPlayIndex_;
+    }
+
+  
+
+    public void NextEffect()
+    {
+        int newEffectToPlayIndex_;
+ 
+            if (currentEffect_ != 2)
+            {
+                newEffectToPlayIndex_ = currentEffect_ + 1;
+                VisualManager.Instance.ChangeEffect(m_Visuals.GetChild(currentEffect_), m_Visuals.GetChild(newEffectToPlayIndex_), m_AudioSource.GetChild(currentSong_));
+            }
+            else
+            {
+                newEffectToPlayIndex_ = 0;
+                VisualManager.Instance.ChangeEffect(m_Visuals.GetChild(currentEffect_), m_Visuals.GetChild(newEffectToPlayIndex_), m_AudioSource.GetChild(currentSong_));
+            }
+
+        //if(currentEffect_ != selectedEffectThroughUI_)
+        //    ResetToggle(currentEffect_);
+
+        Debug.Log(hasTheEffectBeenChanged + "bool vediamo");
+        currentEffect_ = newEffectToPlayIndex_;
+        UpdateSelectedToggle(currentEffect_, false);
+
+    }
+
+    public void PreviousEffect()
+    {
+        int newEffectToPlayIndex_;
+
+        if (currentEffect_ != 0)
+        {
+            newEffectToPlayIndex_ = currentEffect_ - 1;
+            VisualManager.Instance.ChangeEffect(m_Visuals.GetChild(currentEffect_), m_Visuals.GetChild(newEffectToPlayIndex_), m_AudioSource.GetChild(currentSong_));
+        }
+        else
+        {
+            newEffectToPlayIndex_ = 2;
+            VisualManager.Instance.ChangeEffect(m_Visuals.GetChild(currentEffect_), m_Visuals.GetChild(newEffectToPlayIndex_), m_AudioSource.GetChild(currentSong_));
+        }
+
+        currentEffect_ = newEffectToPlayIndex_;
+        UpdateSelectedToggle(currentEffect_, false);
+
+        //if (isTheEffectBeenChanged)
+        //    ResetToggle(currentEffect_);
+    }
+
+    //---------------------FUNCTIONS TO HANDLE AUDIO AND VISUAL MANAGER--------------------------
+    //-------------------------------------------------------------------------------------------
 }

@@ -7,7 +7,7 @@ public class VisualManager : MonoBehaviour {
     public static VisualManager Instance;
     
     //Current playing effect
-    public static Transform currentEffect_;
+    //public static Transform currentEffect_;
 
     private Dictionary<Transform, Visual> m_DictOfVisuals = new Dictionary<Transform, Visual>();
 
@@ -64,22 +64,22 @@ public class VisualManager : MonoBehaviour {
     /// <summary>
     /// Change the effect when changing the song
     /// </summary>
-    public void ChangeEffect(Transform newEffect_, Transform newSong_)
+    public void ChangeEffect(Transform currentEffect_, Transform newEffect_, Transform newSong_)
     {
         //Disable the previous effect meshrender
         m_DictOfVisuals[currentEffect_].DisableMeshRender(m_DictOfVisuals[currentEffect_].GetComponentInChildren<MeshRenderer>());
-        //Setting the new effect
-        currentEffect_ = newEffect_;
+        
         //Activating the new effect meshrender
-        m_DictOfVisuals[currentEffect_].EnableMeshRender(m_DictOfVisuals[currentEffect_].GetComponentInChildren<MeshRenderer>());
+        m_DictOfVisuals[newEffect_].EnableMeshRender(m_DictOfVisuals[newEffect_].GetComponentInChildren<MeshRenderer>());
+        
         //Activating the effect
-        AssignAudioToVisual(currentEffect_, newSong_);
+        AssignAudioToVisual(newEffect_, newSong_);
     }
 
      /// <summary>
      /// Change the texture color
      /// </summary>
-    public void changeMediaPlayerColor(Color32 newColor_)
+    public void changeMediaPlayerColor(Transform currentEffect_, Color32 newColor_)
     {
         m_DictOfVisuals[currentEffect_].ChangeMaterialColor(newColor_);
     }

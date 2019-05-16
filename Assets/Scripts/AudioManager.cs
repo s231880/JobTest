@@ -100,9 +100,6 @@ public class AudioManager : MonoBehaviour
         m_AudioSources[songToStop_].GetComponent<AudioSource>().Stop();
     }
 
-
-
-
     public void UpdateVolume(float newVolume_, Transform currentSong_)
     {
         playerVolume = newVolume_;
