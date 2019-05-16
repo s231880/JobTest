@@ -22,8 +22,6 @@ public class Core : MonoBehaviour
     private static int currentPlayingEffectIndex_ = 0;
     private static int newEffectToPlayIndex_ = 0;
 
-    private static int currentEffectManualActivatedIndex_ = 0;
-
     //If the effect has been change through the UI toggle group
     private static bool manualChangeVisualEffect_ = false;
 
@@ -285,11 +283,6 @@ public class Core : MonoBehaviour
 
     public void UpdateCurrentEffectIndex(int value)
     {
-        //if (!manualChangeVisualEffect_)
-        //    currentPlayingEffectIndex_ = newEffectToPlayIndex_;
-        //else
-        //    currentPlayingEffectIndex_ = currentEffectManualActivatedIndex_;
-
         currentPlayingEffectIndex_ = value;
     }
 
