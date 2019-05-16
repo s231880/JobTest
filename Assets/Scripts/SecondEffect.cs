@@ -44,7 +44,7 @@ public class SecondEffect : Visual
 
             int iIndex = i * iSamplesPerPixel;
             float value = samples[iIndex] * m_fSampleModifer;
-            m_Samples[i] = Mathf.Lerp(m_Samples[i], value, Time.deltaTime * 10f);
+            m_Samples[i] = Mathf.Lerp(m_Samples[i], value, Mathf.Sin(Time.deltaTime) * 10f);
             m_Texture.SetPixel(0, i, white * (m_Samples[i] * iIndex));
         }
 

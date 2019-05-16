@@ -5,9 +5,6 @@ using UnityEngine;
 public class VisualManager : MonoBehaviour {
 
     public static VisualManager Instance;
-    
-    //Current playing effect
-    //public static Transform currentEffect_;
 
     private Dictionary<Transform, Visual> m_DictOfVisuals = new Dictionary<Transform, Visual>();
 

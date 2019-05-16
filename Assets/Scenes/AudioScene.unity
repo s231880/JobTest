@@ -265,7 +265,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 131755854}
-        m_MethodName: pressedPreviousButton
+        m_MethodName: PressedPreviousButton
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2386,7 +2386,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 131755854}
-        m_MethodName: pressedNextButton
+        m_MethodName: PressedNextButton
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

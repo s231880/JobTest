@@ -44,11 +44,6 @@ public class TextureVisual : Visual
             float value = samples[iIndex] * m_fSampleModifer;
             m_Samples[i] = Mathf.Lerp(m_Samples[i], value, Time.deltaTime * 5.0f);
             m_Texture.SetPixel(i, 0, white * (m_Samples[i] * iIndex));
-
-            //int iIndex = i * iSamplesPerPixel;
-            //float value = samples[iIndex] * m_fSampleModifer;
-            //m_Samples[i] = Mathf.Lerp(m_Samples[i], value, Time.deltaTime * 5.0f);
-            //m_Texture.SetPixel(i, 0, white * (m_Samples[i] * iIndex));
         }
 
         //Save changes on texture
