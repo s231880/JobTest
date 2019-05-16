@@ -19,15 +19,13 @@ public class Core : MonoBehaviour
 
     //Variables that keep track of what track and effect aare currently running
     private static int currentSong_ = 0;
-    private static int currentEffect_ = 0;
+    private static int currentPlayingEffectIndex_ = 0;
+    private static int newEffectToPlayIndex_ = 0;
 
+    private static int currentEffectManualActivatedIndex_ = 0;
 
-    //private static int selectedEffectThroughUI_ = 0;
-    private static bool hasTheEffectBeenChanged = false;
-
-
-    //private static bool isThePlayerPlaying = true;
-    //private static bool isTheEffectBeenChanged = false;
+    //If the effect has been change through the UI toggle group
+    private static bool manualChangeVisualEffect_ = false;
 
     // Use this for initialization
     void Start ()
@@ -78,24 +76,50 @@ public class Core : MonoBehaviour
     }
 
     //-------------------------------------------------------------------------------------------
-    //-------------------------- UI HANDLE FUNCTIONS ----------------------------------------
-    
+    //-------------------------- UI HANDLE FUNCTIONS --------------------------------------------
+
     /// <summary>
     ///Method called by the UI next button
     /// </summary>
-    public void pressedNextButton()
+    public void PressedNextButton()
     {
+        //Playing the new song
         NextSong();
-        NextEffect();
+
+        //If is running the default visual effect activating the next one
+        if (!manualChangeVisualEffect_)
+            UpdateSelectedToggle(GetNextEffectIndex());
+
+        //If visual effect has been updated through the UI
+        else
+        {
+            //Setting the default effect
+            UpdateSelectedToggle(currentSong_);
+            manualChangeVisualEffect_ = false;
+        }
+
     }
+
+
 
     /// <summary>
     ///Method called by the UI previous button
     /// </summary>
-    public void pressedPreviousButton()
+    public void PressedPreviousButton()
     {
+        //Playing the new song
         PreviousSong();
-        PreviousEffect();
+
+        //If is running the default visual effect activating the next one
+        if (!manualChangeVisualEffect_)
+            UpdateSelectedToggle(GetPreviousEffectIndex());
+
+        else
+        {
+            //Setting the default effect
+            UpdateSelectedToggle(currentSong_);
+            manualChangeVisualEffect_ = false;
+        }
     }
 
     /// <summary>
@@ -123,7 +147,7 @@ public class Core : MonoBehaviour
         textureColor.g = greenSlider.value;
         textureColor.b = blueSlider.value;
 
-        VisualManager.Instance.changeMediaPlayerColor(m_Visuals.GetChild(currentEffect_), textureColor);
+        VisualManager.Instance.changeMediaPlayerColor(m_Visuals.GetChild(currentPlayingEffectIndex_), textureColor);
     }
 
     /// <summary>
@@ -153,26 +177,36 @@ public class Core : MonoBehaviour
     /// This method allows the user to change the visual effect through the Toggle Group
     /// without changing the playing song
     /// </summary>
-    public void ChangeEffectThroughUI()
+    public void ChangeEffect()
     {
-        currentEffect_ = GetEnabledToggleIndex();
-        VisualManager.Instance.ChangeEffect(m_Visuals.GetChild(currentEffect_), m_Visuals.GetChild(currentEffect_), m_AudioSource.GetChild(currentSong_));
+        //MediaPlayer not updated through the UI toggles  -> running the default effect 
+        if (!manualChangeVisualEffect_)
+        {
+            VisualManager.Instance.ChangeEffect(m_Visuals.GetChild(currentPlayingEffectIndex_), m_Visuals.GetChild(newEffectToPlayIndex_), m_AudioSource.GetChild(currentSong_));
 
-        //UpdateSelectedToggle(currentEffect_, true);
-        //hasTheEffectBeenChanged = true;
-        //Debug.Log(selectedEffectThroughUI_ + "ChangeEffectThroughUI" + currentEffect_);
+            //Media player manual updated now, updating the effect without changing song
+            if (GetEnabledToggleIndex() != currentSong_)
+            {
+                UpdateCurrentEffectIndex(GetEnabledToggleIndex());
+                manualChangeVisualEffect_ = true;  //No more default visual effect
+            }
+
+            //Media player automatic updated, no toggle used!
+            else
+                UpdateCurrentEffectIndex(newEffectToPlayIndex_);
+        }
+
+        //MediaPlayer updated through the UI toggles
+        else
+        {
+            VisualManager.Instance.ChangeEffect(m_Visuals.GetChild(currentPlayingEffectIndex_), m_Visuals.GetChild(GetEnabledToggleIndex()), m_AudioSource.GetChild(currentSong_));
+            UpdateCurrentEffectIndex(GetEnabledToggleIndex());
+        }
     }
 
-    public void ResetToggle(int index_)
+    public void UpdateSelectedToggle(int index_)
     {
         listOfToggle[index_].isOn = true;
-        //selectedEffectThroughUI_ = currentEffect_;
-    }
-
-    public void UpdateSelectedToggle(int index_, bool manualChange)
-    {
-        listOfToggle[index_].isOn = true;
-
     }
 
     //-------------------------- UI HANDLE FUNCTIONS ----------------------------------------
@@ -229,52 +263,40 @@ public class Core : MonoBehaviour
 
   
 
-    public void NextEffect()
-    {
-        int newEffectToPlayIndex_;
- 
-            if (currentEffect_ != 2)
-            {
-                newEffectToPlayIndex_ = currentEffect_ + 1;
-                VisualManager.Instance.ChangeEffect(m_Visuals.GetChild(currentEffect_), m_Visuals.GetChild(newEffectToPlayIndex_), m_AudioSource.GetChild(currentSong_));
-            }
-            else
-            {
-                newEffectToPlayIndex_ = 0;
-                VisualManager.Instance.ChangeEffect(m_Visuals.GetChild(currentEffect_), m_Visuals.GetChild(newEffectToPlayIndex_), m_AudioSource.GetChild(currentSong_));
-            }
+    public int GetNextEffectIndex()
+    { 
+        if (currentPlayingEffectIndex_ != 2)
+            newEffectToPlayIndex_ = currentPlayingEffectIndex_ + 1;
+        else
+            newEffectToPlayIndex_ = 0;
 
-        //if(currentEffect_ != selectedEffectThroughUI_)
-        //    ResetToggle(currentEffect_);
-
-        Debug.Log(hasTheEffectBeenChanged + "bool vediamo");
-        currentEffect_ = newEffectToPlayIndex_;
-        UpdateSelectedToggle(currentEffect_, false);
-
+        return newEffectToPlayIndex_;
     }
 
-    public void PreviousEffect()
+    public int GetPreviousEffectIndex()
     {
-        int newEffectToPlayIndex_;
-
-        if (currentEffect_ != 0)
-        {
-            newEffectToPlayIndex_ = currentEffect_ - 1;
-            VisualManager.Instance.ChangeEffect(m_Visuals.GetChild(currentEffect_), m_Visuals.GetChild(newEffectToPlayIndex_), m_AudioSource.GetChild(currentSong_));
-        }
+        if (currentPlayingEffectIndex_ != 0)
+            newEffectToPlayIndex_ = currentPlayingEffectIndex_ - 1;
         else
-        {
             newEffectToPlayIndex_ = 2;
-            VisualManager.Instance.ChangeEffect(m_Visuals.GetChild(currentEffect_), m_Visuals.GetChild(newEffectToPlayIndex_), m_AudioSource.GetChild(currentSong_));
-        }
 
-        currentEffect_ = newEffectToPlayIndex_;
-        UpdateSelectedToggle(currentEffect_, false);
+        return newEffectToPlayIndex_;
+    }
 
-        //if (isTheEffectBeenChanged)
-        //    ResetToggle(currentEffect_);
+    public void UpdateCurrentEffectIndex(int value)
+    {
+        //if (!manualChangeVisualEffect_)
+        //    currentPlayingEffectIndex_ = newEffectToPlayIndex_;
+        //else
+        //    currentPlayingEffectIndex_ = currentEffectManualActivatedIndex_;
+
+        currentPlayingEffectIndex_ = value;
     }
 
     //---------------------FUNCTIONS TO HANDLE AUDIO AND VISUAL MANAGER--------------------------
     //-------------------------------------------------------------------------------------------
+
+
+
+
 }
