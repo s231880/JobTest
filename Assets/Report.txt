@@ -1,0 +1,36 @@
+								Job Test
+//------------------------------------------------------------------------------------------------------------------------------------------
+//--------------------------------------------------------------OVERVIEW------------------------------------------------------------------
+The media player allows to play/pause, stop and change songs with the buttons at the bottom of the UI,
+change the visual effect with the toggles at the top, and change the effect color and the volume through the sliders. 
+
+I've tried to complete every task.Task1 was the most difficul and I'm not sure if I've did it well,my visual effects are not so fancy and their classes
+are almost equal. Task2 was easy, but I'm not sure if it is complete, or if I could have done more and better. 
+The tasks 3&4 were easy, while task5 gave me some problems, and sometime changing the visual effect at runtime generate a little bug. 
+    
+//------------------------------------------------------------------------------------------------------------------------------------------
+//--------------------------------------------------------------TIME USAGE------------------------------------------------------------------
+
+TOTAL: 26H
+
+PROGRAMMING: 25H
+
+-> BECOME FAMILIAR WITH THE CODE : 7H
+-> DEVELOPING: 8H 
+-> IMPROVING THE CODE: 10H
+
+RESEARCING: 1H
+
+
+//------------------------------------------------------------------------------------------------------------------------------------------
+//------------------------------------------------------THOUGHTS & FUTURE IMPROVEMENTS------------------------------------------------------
+Future Improvements 
+-> A new UI
+-> Better visual effects, maybe developing diffent shaders
+-> Improving the color palette
+-> Fixing the bug
+
+The assignmet wasn't difficult, but I was a little bit rusty with Unity so I had to do some attempts to become familiar with the code and understand
+how to implement task1. I also had some problem when improving the code because I get stucked and I loose 4/5 hours, and I had not time to finish and fix 
+the bug(I worked all those days).
+ 

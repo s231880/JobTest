@@ -129,6 +129,14 @@ public class Core : MonoBehaviour
     }
 
     /// <summary>
+    ///  Method called by the UI play button
+    /// </summary>
+    public void PressedStopButton()
+    {
+        AudioManager.Instance.StopSong(m_AudioSource.GetChild(currentSong_));
+    }
+    
+    /// <summary>
     ///  Method called by the UI volume slider
     /// </summary>
     public void SliderVolumeChange()
